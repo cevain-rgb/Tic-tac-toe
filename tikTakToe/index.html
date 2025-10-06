@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>tic tac toe</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --light-bg: white;
+      --dark-bg: rgba(1, 21, 37, 1);
+      --light-color: #42445A;
+      --dark-color: whitesmoke;
+    }
+  
+    body {
+      color: white;
+      background: var(--dark-bg);
+      background-blend-mode: darken;
+      font-family: 'open sang';
+    }
+    
+    .tiktak-block {
+      margin: auto;
+      display: grid;
+      grid-template-rows: repeat(3, 50px);
+      grid-template-columns: repeat(3, 50px);
+      grid-gap: 0;
+    }
+    
+    .title {
+      text-shadow: 0 0 10px #ff0000, 0 0 20px #0000ff;
+      /*background: linear-gradient(to right, #ff0000, #0000ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;*/
+    }
+    
+    .tiktak-block .case {
+      border: 2px solid;
+      text-align: center;
+      text-shadow: 0px 0px 10px rgba(53, 239, 255, 0.74);
+      font-size: 2em;
+    }
+    
+    .case:hover {
+      cursor: pointer;
+    }
+    
+    .col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    #popup {
+      position: absolute;
+      top: calc(50% - 150px);
+      left: calc(50% - 150px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      gap: 5px;
+      background: whitesmoke;
+      color: #42445A;
+      width: 300px;
+      height: auto;
+      border: 2px solid #42445A;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+  
+<body>
+  <div class="container col">
+      <h1 class="title" id="appName">tik tak toe Game</h1>
+      <div class="tiktak-block">
+        <div class="case case-1"></div>
+        <div class="case case-2"></div>
+        <div class="case case-3"></div>
+        <div class="case case-4"></div>
+        <div class="case case-5"></div>
+        <div class="case case-6"></div>
+        <div class="case case-7"></div>
+        <div class="case case-8"></div>
+        <div class="case case-9"></div>
+      </div>
+      
+      <button onclick="init()">recommencer</button>
+  </div>
+  <div id="popup" class="hidden">
+    <div class="popup-h"></div>
+    <div class="popup-b">
+      <p class="text"></p>
+    </div>
+    <div class="popup-f">
+      <button class="popup-close" onclick="closePopup()">fermer</button>
+    </div>
+  </div>
+  
+  <script src="app.js"></script>
+</body>
+
+</html>
+
+<script>
+  function displayPopup(message = 'none') {
+    const popup = document.querySelector('#popup');
+    popup.style.display = 'flex';
+    document.querySelector('#popup .popup-b .text').textContent = message
+    
+  }
+  function closePopup() {
+    document.querySelector('#popup').style.display='none'
+  }
+  const appName = document.querySelector('#appName');
+  document.body.onload = dynamicWrite(appName);
+  function dynamicWrite(comp, timeInterval = 100) {
+    let text = comp.innerText;
+    comp.innerText = '|';
+    let i = 0;
+    Interval = setInterval(() => {
+      moveLastChar();
+      comp.innerHTML += text[i] + '|';
+      i++;
+      if (i === text.length) {
+        clearInterval(Interval);
+        moveLastChar();
+      }
+      
+      function moveLastChar() {
+        let aux = comp.innerText;
+        comp.innerText = aux.slice(0, -1);
+      }
+    }, timeInterval);
+    
+  }
+  
+  const cas = document.querySelectorAll('.case');
+  let win = false;
+  
+  let status = true;
+  cas.forEach(c => {
+    c.addEventListener('click', (e) => {
+      if (!e.target.innerText) {
+        e.target.innerText = status ? 'o' : 'x';
+        status = !status;
+      }
+      win = test(cas)
+      if (win)
+        displayPopup(win + ' a gagnez');
+      else if (isNull(cas))
+        displayPopup('match null')
+      
+      return;
+    });
+  });
+  
+  function init() {
+    cas.forEach(c => {
+      c.innerHTML = '';
+    })
+  }
+  
+  function test(elt) {
+    const combin = [
+      /* horrizontale */
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      /* verticale */
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      /* diagonale */
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+    
+    for(let i = 0; i< combin.length; i++) {
+      win = '';
+      for(let j = 1; j< combin[i].length; j++){
+        if(elt[combin[i][j]].innerText == elt[combin[i][j-1]].innerText && elt[combin[i][j]].innerText.trim != "") {
+          win = elt[combin[i][j]].innerText;
+        }
+        else {
+          win = '';
+          break;
+        }
+      }
+      if (win)
+        return win;
+    }
+    return win;
+  }
+  
+  function isNull(elt) {
+    for (let i = 0; i < elt.length; i++) {
+      if (elt[i].innerText === '')
+        return false;
+
+    }
+    return true;
+  }
+</script>
